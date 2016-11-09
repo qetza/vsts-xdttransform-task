@@ -1,0 +1,53 @@
+{
+    "id": "98012758-C053-475D-9D6A-FD0773C39E09",
+    "name": "xdttransform",
+    "friendlyName": "XDT Transform",
+    "description": "Apply XDT transforms on XML files",
+    "helpMarkDown": "[More Information](https://github.com/qetza/vsts-xdttransform-task#readme)",
+    "category": "Utility",
+    "visibility": [
+        "Build",
+        "Release"
+    ],
+    "author": "Guillaume Rouchon",
+    "version": {
+        "Major": 1,
+        "Minor": 0,
+        "Patch": 0
+    },
+    "minimumAgentVersion": "1.92.0",
+    "inputs": [
+        {
+            "name": "sourceFile",
+            "type": "filePath",
+            "label": "Source file",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Path to the XML file on which to apply the XDT transforms."
+        },
+        {
+            "name": "transformFile",
+            "type": "filePath",
+            "label": "Transform file",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Path to the XDT transform file."
+        },
+        {
+            "name": "outputFile",
+            "type": "string",
+            "label": "Output file",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "Path to the output file, can be fully qualified path or relative to the default working directory.<br/>Leave empty to overwrite the source file."
+        }
+    ],
+    "instanceNameFormat": "Apply transform on $(sourceFile)",
+    "execution": {
+        "PowerShell3": {
+            "target": "$(currentDirectory)\\transform.ps1",
+            "argumentFormat": "",
+            "workingDirectory": "$(System.DefaultWorkingDirectory)"
+        }
+    }
+}

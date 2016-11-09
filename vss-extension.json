@@ -1,0 +1,68 @@
+{
+    "manifestVersion": 1,
+    "id": "xdttransform",
+    "name": "XDT Transform",
+    "version": "1.0.0",
+    "public": true,
+    "publisher": "qetza",
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "description": "Task to apply XDT transform on XML files.",
+    "categories": [
+        "Build and release"
+    ],
+    "tags": [
+        "release",
+        "build",
+        "xdt",
+        "transform",
+        "configuration"
+    ],
+    "links": {
+        "learn": {
+            "uri": "https://github.com/qetza/vsts-xdttransform-task#readme"
+        },
+        "support": {
+            "uri": "https://github.com/qetza/vsts-xdttransform-task/issues"  
+        }
+    },
+    "icons": {
+        "default": "images/extension-icon.png"
+    },
+    "branding": {
+        "color": "#1C3272",
+        "theme": "dark"
+    },
+    "screenshots": [
+        { "path": "images/screenshot-01.png" },
+        { "path": "images/screenshot-02.png" }
+    ],
+    "content": {
+        "details": {
+            "path": "README.md"
+        },
+        "license": {
+            "path": "LICENSE.txt"
+        }
+    },
+    "files": [
+        {
+            "path": "task"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "xdttransform-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "task"
+            }
+        }
+    ]
+}

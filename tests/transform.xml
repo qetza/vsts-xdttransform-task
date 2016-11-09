@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+  <appSettings>
+    <add key="environment"
+         value="build"
+         xdt:Transform="SetAttributes"
+         xdt:Locator="Match(key)" />
+  </appSettings>
+  
+  <connectionStrings>
+    <add name="DefaultConnection"
+         connectionString="Data Source=#{database.server}#; Initial Catalog=#{database.name}#; User ID=#{database.user}#; Password=#{database.password}#"
+         xdt:Transform="SetAttributes"
+         xdt:Locator="Match(name)" />
+  </connectionStrings>
+</configuration>

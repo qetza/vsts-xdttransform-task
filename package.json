@@ -1,0 +1,33 @@
+{
+  "name": "qetza.vsts-xdttransform-task",
+  "version": "0.1.0",
+  "description": "Build task for VS Team Services that can run XDT transforms on XML files.",
+  "author": "Guillaume Rouchon",
+  "license": "MIT",
+  "homepage": "https://github.com/qetza/vsts-xdttransform-task#readme",
+  "bugs": {
+    "url": "https://github.com/qetza/vsts-xdttransform-task/issues"
+  },
+  "keywords": [
+    "VSTS",
+    "release",
+    "build",
+    "xdt",
+    "transform",
+    "configuration"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qetza/vsts-xdttransform-task.git"
+  },
+  "devDependencies": {
+    "del": "^2.0.0",
+    "gulp": "^3.9.1",
+    "gulp-debug": "^2.1.2",
+    "gulp-util": "^3.0.0",
+    "merge-stream": "^1.0.0",
+    "shelljs": "^0.3.0",
+    "minimist": "1.1.1",
+    "semver": "4.3.3"
+  }
+}

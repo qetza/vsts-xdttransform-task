@@ -1,14 +1,35 @@
-[![Donate](https://raw.githubusercontent.com/qetza/vsts-xdttransform-task/master/images/donate.png)](https://www.paypal.me/grouchon/5)
+[![Donate](images/donate.png)](https://www.paypal.me/grouchon/5)
 
-# XDT transform task for Visual Studio Team Services
-This extension contains a build/release task for VS Team Services to apply XDT transforms on XML files.
+# XDT transform task
+Visual Studio Team Services Build and Release extension that applies XDT transforms on XML files.
 
-# How to use the build/release task
-1. After installing the extension, upload your project to VSTS.
-2. Go to your VSTS project, click on the **Release** tab, and create a new release definition.
-3. Click **Add tasks** and select **XDT Transform** from the **Utility** category.
-4. Configure the step.
+## Usage
+Add a new task, select **XDT Transform** from the **Utility** category and configure it as needed.
+
+![XDT Transform parameters](images/task-parameters.png)
+
+Parameters include:
+- **Working folder**: the working directory for relative paths. If not specified the default working directory will be used.
+- **Transformations**: an absolute or relative newline-separated transformation file rules.
+
+> **Syntax**: {xdt path} => {xml path}[ => {output path}]  
+>
+> - `web.release.config => web.config` will apply web.release.config to web.config and update the file.  
+> - `xdt\web.release.config => config\web.config => web.config` will apply xdt\web.release.config to config\web.config and save the result in web.config.
+
+## Tips
+You can use the [XDT tranform task](https://marketplace.visualstudio.com/items?itemName=qetza.xdttransform) to inject tokens in your XML based configuration files configured for local development and then use the [Replace Tokens task](https://marketplace.visualstudio.com/items?itemName=qetza.replacetokens) to replace those tokens with variable values:
+- create an XDT transformation file containing your tokens
+- setup your configuration file with local developement values
+- at deployment time
+  - inject your tokens in the configuration file by using your transformation file
+  - replace tokens in your updated configuration file
 
 # Release notes
+**New in 2.0.0**
+- **Breaking change**: All previous parameters are now merged in a single line using syntax `{xdt path} => {xml path}[ => {output path}]`.
+- Add support for multiple transformations.
+- Add _Working folder_ parameter for root of relative paths.
+
 **New in 1.0.0**
 - Initial release

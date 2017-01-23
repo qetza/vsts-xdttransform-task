@@ -11,38 +11,30 @@
     ],
     "author": "Guillaume Rouchon",
     "version": {
-        "Major": 1,
+        "Major": 2,
         "Minor": 0,
         "Patch": 0
     },
     "minimumAgentVersion": "1.92.0",
     "inputs": [
         {
-            "name": "sourceFile",
+            "name": "workingFolder",
             "type": "filePath",
-            "label": "Source file",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Path to the XML file on which to apply the XDT transforms."
-        },
-        {
-            "name": "transformFile",
-            "type": "filePath",
-            "label": "Transform file",
-            "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Path to the XDT transform file."
-        },
-        {
-            "name": "outputFile",
-            "type": "string",
-            "label": "Output file",
+            "label": "Working folder",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "Path to the output file, can be fully qualified path or relative to the default working directory.<br/>Leave empty to overwrite the source file."
+            "helpMarkDown": "Working directory for relative paths. Defaults to the agent working directory."
+        },
+        {
+            "name": "transforms",
+            "type": "multiLine",
+            "label": "Transformations",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Absolute or relative newline-separated of transformation file rules.<br/>Syntax: {xdt path} => {xml path}[ => {output path}]<br/>Example: 'web.release.config => web.config' will apply web.release.config to web.config and update the file.<br/>Example: 'xdt\\web.release.config => config\\web.config => web.config' will apply xdt\\web.release.config to config\\web.config and save the result in web.config."
         }
     ],
-    "instanceNameFormat": "Apply transform on $(sourceFile)",
+    "instanceNameFormat": "Apply transforms $(transforms)",
     "execution": {
         "PowerShell3": {
             "target": "$(currentDirectory)\\transform.ps1",

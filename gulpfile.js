@@ -38,7 +38,6 @@ gulp.task('package', ['build'], function() {
         version: args.version,
         stage: args.stage,
         public: args.public,
-        private: args.private,
         taskId: args.taskId
     }
 
@@ -46,7 +45,7 @@ gulp.task('package', ['build'], function() {
         if (options.version === 'auto') {
             var ref = new Date(2000, 1, 1);
             var now = new Date();
-            var major = 0
+            var major = 1
             var minor = Math.floor((now - ref) / 86400000);
             var patch = Math.floor(Math.floor(now.getSeconds() + (60 * (now.getMinutes() + (60 * now.getHours())))) * 0.5)
             options.version = major + '.' + minor + '.' + patch
@@ -61,7 +60,6 @@ gulp.task('package', ['build'], function() {
         case 'dev':
             options.taskId = 'BC5D1625-874F-4ABF-AC07-4A55EC6DCC76';
             options.public = false;
-            options.private = false;
             break;
     }
     

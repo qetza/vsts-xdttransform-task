@@ -1,61 +1,47 @@
 [CmdletBinding()]
 param()
 
-Trace-VstsEnteringInvocation $MyInvocation
-try
+Function _ApplyTransform
 {
-    # get inputs
-    [string] $sourceFile = Get-VstsInput -Name 'sourceFile' -Require
-    [string] $transformFile = Get-VstsInput -Name 'transformFile' -Require
-    [string] $outputFile = Get-VstsInput -Name 'outputFile' -Default ''
-
-    if (!$outputFile)
-    {
-        $outputFile = $sourceFile
-    }
-
-    if (![System.IO.Path]::IsPathRooted($outputFile))
-    {
-        $outputFile = Join-Path $env:SYSTEM_DEFAULTWORKINGDIRECTORY $outputFile
-    }
+    param(
+        [string] $SourceFile,
+        [string] $TransformFile,
+        [string] $OutputFile
+    )
 
     # validate inputs
-    if (!(Test-Path $sourceFile))
+    if (!(Test-Path $SourceFile))
     {
-        Write-Error "File '${sourceFile}' not found."
+        Write-Error "File '${SourceFile}' not found."
         
         return
     }
 
-    if (!(Test-Path $transformFile))
+    if (!(Test-Path $TransformFile))
     {
-        Write-Error "File '${transformFile}' not found."
+        Write-Error "File '${TransformFile}' not found."
         
         return
     }
-
-    # import assemblies
-    Add-Type -Path "${PSScriptRoot}\Microsoft.Web.XmlTransform.dll"
 
     # apply transformations
-    Write-Host "Applying transformations '${transformFile}' on file '${sourceFile}'..."
+    Write-Host "Applying transformations '${TransformFile}' on file '${SourceFile}'..."
     
     $source = New-Object Microsoft.Web.XmlTransform.XmlTransformableDocument
     $source.PreserveWhitespace = $true
-    $source.Load($sourceFile)
+    $source.Load($SourceFile)
 
-    # apply transformations
-    $transform = [System.IO.File]::ReadAllText($transformFile)
+    $transform = [System.IO.File]::ReadAllText($TransformFile)
     $transformation = New-Object Microsoft.Web.XmlTransform.XmlTransformation $transform, $false, $null
     if (!$transformation.Apply($source))
     {
-        Write-Error "Error while applying transformations '${transformFile}'."
+        Write-Error "Error while applying transformations '${TransformFile}'."
 
         return
     }
 
     # save output
-    $outputParent = Split-Path $outputFile -Parent
+    $outputParent = Split-Path $OutputFile -Parent
     if (!(Test-Path $outputParent))
     {
         Write-Verbose "Creating folder '${outputParent}'."
@@ -63,7 +49,66 @@ try
         New-Item -Path $outputParent -ItemType Directory -Force > $null
     }
 
-    $source.Save($outputFile)
+    $source.Save($OutputFile)
+}
+
+Trace-VstsEnteringInvocation $MyInvocation
+try
+{
+    # get inputs
+    [string] $workingFolder = Get-VstsInput -Name 'workingFolder'
+    [string] $transforms = Get-VstsInput -Name 'transforms' -Require
+
+    if (!$workingFolder)
+    {
+        $workingFolder = $env:SYSTEM_DEFAULTWORKINGDIRECTORY
+    }
+
+    # import assemblies
+    Add-Type -Path "${PSScriptRoot}\Microsoft.Web.XmlTransform.dll"
+
+    # apply transforms
+    $transforms -split "`n`r?" | % {
+        $rule = $_
+        if (!$rule)
+        {
+            Write-Warning "Found empty rule."
+
+            return
+        }
+
+        $ruleParts = $rule -split " *=> *"
+        if ($ruleParts.Length -lt 2)
+        {
+            Write-Error "Invalid rule '${rule}'."
+
+            return
+        }
+
+        $transformFile = $ruleParts[0]
+        if (![System.IO.Path]::IsPathRooted($transformFile))
+        {
+            $transformFile = Join-Path $workingFolder $transformFile
+        }
+
+        $sourceFile = $ruleParts[1]
+        if (![System.IO.Path]::IsPathRooted($sourceFile))
+        {
+            $sourceFile = Join-Path $workingFolder $sourceFile
+        }
+
+        $outputFile = $sourceFile
+        if ($ruleParts.Length -eq 3)
+        {
+            $outputFile = $ruleParts[2]
+            if (![System.IO.Path]::IsPathRooted($outputFile))
+            {
+                $outputFile = Join-Path $workingFolder $outputFile
+            }
+        }
+
+        _ApplyTransform -SourceFile $sourceFile -TransformFile $transformFile -OutputFile $outputFile
+    }
 }
 finally
 {

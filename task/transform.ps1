@@ -70,7 +70,7 @@ try
     Add-Type -Path "${PSScriptRoot}\Microsoft.Web.XmlTransform.dll"
 
     # apply transforms
-    $transforms -split " *(?:`n`r?)|, *" | % {
+    $transforms -split "(?:`n`r?)|," | % {
         $rule = $_
         if (!$rule)
         {

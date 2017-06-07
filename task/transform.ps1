@@ -64,11 +64,13 @@ try
         $workingFolder = $env:SYSTEM_DEFAULTWORKINGDIRECTORY
     }
 
+    $workingFolder = $workingFolder.Trim()
+
     # import assemblies
     Add-Type -Path "${PSScriptRoot}\Microsoft.Web.XmlTransform.dll"
 
     # apply transforms
-    $transforms -split "`n`r?" | % {
+    $transforms -split " *(?:`n`r?)|, *" | % {
         $rule = $_
         if (!$rule)
         {
@@ -85,13 +87,13 @@ try
             return
         }
 
-        $transformFile = $ruleParts[0]
+        $transformFile = $ruleParts[0].Trim()
         if (![System.IO.Path]::IsPathRooted($transformFile))
         {
             $transformFile = Join-Path $workingFolder $transformFile
         }
 
-        $sourceFile = $ruleParts[1]
+        $sourceFile = $ruleParts[1].Trim()
         if (![System.IO.Path]::IsPathRooted($sourceFile))
         {
             $sourceFile = Join-Path $workingFolder $sourceFile
@@ -100,7 +102,7 @@ try
         $outputFile = $sourceFile
         if ($ruleParts.Length -eq 3)
         {
-            $outputFile = $ruleParts[2]
+            $outputFile = $ruleParts[2].Trim()
             if (![System.IO.Path]::IsPathRooted($outputFile))
             {
                 $outputFile = Join-Path $workingFolder $outputFile

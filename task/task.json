@@ -12,7 +12,7 @@
     "author": "Guillaume Rouchon",
     "version": {
         "Major": 2,
-        "Minor": 0,
+        "Minor": 1,
         "Patch": 0
     },
     "minimumAgentVersion": "1.92.0",
@@ -31,7 +31,7 @@
             "label": "Transformations",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Absolute or relative newline-separated of transformation file rules.<br/>Syntax: {xdt path} => {xml path}[ => {output path}]<br/>Example: 'web.release.config => web.config' will apply web.release.config to web.config and update the file.<br/>Example: 'xdt\\web.release.config => config\\web.config => web.config' will apply xdt\\web.release.config to config\\web.config and save the result in web.config."
+            "helpMarkDown": "Absolute or relative comma or newline-separated of transformation file rules.<br/>Syntax: {xdt path} => {xml path}[ => {output path}]<br/>Example: 'web.release.config => web.config' will apply web.release.config to web.config and update the file.<br/>Example: 'xdt\\web.release.config => config\\web.config => web.config' will apply xdt\\web.release.config to config\\web.config and save the result in web.config."
         }
     ],
     "instanceNameFormat": "Apply transforms $(transforms)",

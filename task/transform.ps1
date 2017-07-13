@@ -71,7 +71,7 @@ try
 
     # apply transforms
     $transforms -split "(?:`n`r?)|," | % {
-        $rule = $_
+        $rule = $_.Trim()
         if (!$rule)
         {
             Write-Warning "Found empty rule."

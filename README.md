@@ -16,6 +16,8 @@ Parameters include:
 >
 > - `web.release.config => web.config` will apply web.release.config to web.config and update the file.  
 > - `xdt\web.release.config => config\web.config => web.config` will apply xdt\web.release.config to config\web.config and save the result in web.config.
+> - `*.release.config => .config` enabled wildcard search, the search should start with `*`. This will apply all {filename}.release.config files to the {filename}.config of the same name. The search is recursive from the working directory.
+> - `*.release.config => .config => .xml` enabled wildcard search, the search should start with `*`. This will apply all {filename}.release.config files to the {filename}.config and save it in the {filename}.xml. The search is recursive from the working directory.
 
 ## Tips
 You can use the [XDT tranform task](https://marketplace.visualstudio.com/items?itemName=qetza.xdttransform) to inject tokens in your XML based configuration files configured for local development and then use the [Replace Tokens task](https://marketplace.visualstudio.com/items?itemName=qetza.replacetokens) to replace those tokens with variable values:

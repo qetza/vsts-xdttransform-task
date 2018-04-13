@@ -72,6 +72,8 @@ try
     # apply transforms
     $transforms -split "(?:`n`r?)|," | % {
         $rule = $_.Trim()
+        $wildcardSearch = $false
+
         if (!$rule)
         {
             Write-Warning "Found empty rule."
@@ -88,13 +90,21 @@ try
         }
 
         $transformFile = $ruleParts[0].Trim()
+        
+        if($transformFile.startswith("*"))
+        {
+            $wildcardSearch = $true
+            $transformFileExtension = $transformFile.Substring(1, $transformFile.length - 1)
+            Write-Verbose "Wildcard mode enabled"
+        }
+
         if (![System.IO.Path]::IsPathRooted($transformFile))
         {
             $transformFile = Join-Path $workingFolder $transformFile
         }
 
         $sourceFile = $ruleParts[1].Trim()
-        if (![System.IO.Path]::IsPathRooted($sourceFile))
+        if (!$wildcardSearch -and ![System.IO.Path]::IsPathRooted($sourceFile))
         {
             $sourceFile = Join-Path $workingFolder $sourceFile
         }
@@ -103,13 +113,31 @@ try
         if ($ruleParts.Length -eq 3)
         {
             $outputFile = $ruleParts[2].Trim()
-            if (![System.IO.Path]::IsPathRooted($outputFile))
+            if (!$wildcardSearch -and ![System.IO.Path]::IsPathRooted($outputFile))
             {
                 $outputFile = Join-Path $workingFolder $outputFile
             }
         }
 
-        _ApplyTransform -SourceFile $sourceFile -TransformFile $transformFile -OutputFile $outputFile
+        if($wildcardSearch)
+        {
+            $files = ls $transformFile -recurse | % FullName
+            foreach ($file in $files) 
+            {
+                if($file.endswith($transformFileExtension, "CurrentCultureIgnoreCase"))
+                {
+                    $fileWithoutExtension = $file.Substring(0, $file.length - $transformFileExtension.Length)
+                    $wildcardSource = $fileWithoutExtension + $sourceFile
+                    $wildcardOutput = $fileWithoutExtension + $outputFile
+
+                    _ApplyTransform -SourceFile $wildcardSource -TransformFile $file -OutputFile $wildcardOutput
+                }
+            }
+        }
+        else 
+        {
+            _ApplyTransform -SourceFile $sourceFile -TransformFile $transformFile -OutputFile $outputFile
+        }
     }
 }
 finally

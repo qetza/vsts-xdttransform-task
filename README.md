@@ -18,7 +18,7 @@ Parameters include:
 > - `xdt\web.release.config => config\web.config => web.config` will apply xdt\web.release.config to config\web.config and save the result in web.config.
 
 ## Tips
-You can use the [XDT tranform task](https://marketplace.visualstudio.com/items?itemName=qetza.xdttransform) to inject tokens in your XML based configuration files configured for local development and then use the [Replace Tokens task](https://marketplace.visualstudio.com/items?itemName=qetza.replacetokens) to replace those tokens with variable values:
+You can use the [XDT transform task](https://marketplace.visualstudio.com/items?itemName=qetza.xdttransform) to inject tokens in your XML based configuration files configured for local development and then use the [Replace Tokens task](https://marketplace.visualstudio.com/items?itemName=qetza.replacetokens) to replace those tokens with variable values:
 - create an XDT transformation file containing your tokens
 - setup your configuration file with local developement values
 - at deployment time

@@ -35,7 +35,7 @@ gulp.task('test', ['build'], function() {
 gulp.task('package', ['build'], function() {
     var args = minimist(process.argv.slice(2), {});
     var options = {
-        version: args.version,
+        version: args.ver,
         stage: args.stage,
         public: args.public,
         taskId: args.taskId
@@ -45,7 +45,7 @@ gulp.task('package', ['build'], function() {
         if (options.version === 'auto') {
             var ref = new Date(2000, 1, 1);
             var now = new Date();
-            var major = 1
+            var major = 2
             var minor = Math.floor((now - ref) / 86400000);
             var patch = Math.floor(Math.floor(now.getSeconds() + (60 * (now.getMinutes() + (60 * now.getHours())))) * 0.5)
             options.version = major + '.' + minor + '.' + patch

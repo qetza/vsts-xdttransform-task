@@ -32,6 +32,9 @@ You can set the variable `system.debug` to `true` to enable the debug logging on
 If you cannot fix your issue, open an issue on the github repo and i'll help you :)
 
 # Release notes
+**New in 3.0.0**
+- Add support for wildcard in transformation rules ([#8](https://github.com/qetza/vsts-xdttransform-task/issues/8)) (contributed by Luuk Sommers)
+
 **New in 2.1.0**
 - Add support for comma separator in _Transformations_ parameters.
 

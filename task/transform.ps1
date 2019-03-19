@@ -25,7 +25,7 @@ Function _ApplyTransform
     }
 
     # apply transformations
-    Write-Host "Applying transformations '${TransformFile}' on file '${SourceFile}'..."
+    Write-Host "Applying transformations '${TransformFile}' on '${SourceFile}' to '${OutputFile}'..."
     
     $source = New-Object Microsoft.Web.XmlTransform.XmlTransformableDocument
     $source.PreserveWhitespace = $true
@@ -72,7 +72,6 @@ try
     # apply transforms
     $transforms -split "(?:`n`r?)|," | % {
         $rule = $_.Trim()
-        $wildcardSearch = $false
 
         if (!$rule)
         {
@@ -89,54 +88,75 @@ try
             return
         }
 
-        $transformFile = $ruleParts[0].Trim()
-        
-        if($transformFile.startswith("*"))
-        {
-            $wildcardSearch = $true
-            $transformFileExtension = $transformFile.Substring(1, $transformFile.length - 1)
-            Write-Verbose "Wildcard mode enabled"
+        $defs = [PSCustomObject]@{
+            IsTransformWildcard = $false
+            IsTransformRelative = $false
+            TransformPattern = $ruleParts[0].Trim()
+            IsSourceRelative = $false
+            SourcePattern = $ruleParts[1].Trim()
+            IsOutputRelative = $false
+            OutputPattern = $null
         }
 
-        if (![System.IO.Path]::IsPathRooted($transformFile))
+        if ($defs.TransformPattern.StartsWith('*'))
         {
-            $transformFile = Join-Path $workingFolder $transformFile
+            $defs.IsTransformWildcard = $true
+            $defs.IsTransformRelative = $true
+            $defs.TransformPattern = $defs.TransformPattern.Substring(1)
+        }
+        else
+        {
+            $defs.IsTransformRelative = ![System.IO.Path]::IsPathRooted($defs.TransformPattern)
+            if ($defs.IsTransformRelative)
+            {
+                $defs.TransformPattern = Join-Path $workingFolder $defs.TransformPattern
+            }
         }
 
-        $sourceFile = $ruleParts[1].Trim()
-        if (!$wildcardSearch -and ![System.IO.Path]::IsPathRooted($sourceFile))
+        $defs.IsSourceRelative = ![System.IO.Path]::IsPathRooted($defs.SourcePattern)
+        if ($defs.IsSourceRelative -and !$defs.IsTransformWildcard)
         {
-            $sourceFile = Join-Path $workingFolder $sourceFile
+            $defs.SourcePattern = Join-Path $workingFolder $defs.SourcePattern
         }
 
-        $outputFile = $sourceFile
+        $defs.IsOutputRelative = $defs.IsSourceRelative
+        $defs.OutputPattern = $defs.SourcePattern
+
         if ($ruleParts.Length -eq 3)
         {
-            $outputFile = $ruleParts[2].Trim()
-            if (!$wildcardSearch -and ![System.IO.Path]::IsPathRooted($outputFile))
+            $defs.OutputPattern = $ruleParts[2].Trim()
+            $defs.IsOutputRelative = ![System.IO.Path]::IsPathRooted($defs.OutputPattern)
+
+            if ($defs.IsOutputRelative -and !$defs.IsTransformWildcard)
             {
-                $outputFile = Join-Path $workingFolder $outputFile
+                $defs.OutputPattern = Join-Path $workingFolder $defs.OutputPattern
             }
         }
 
-        if($wildcardSearch)
+        if ($defs.IsTransformWildcard)
         {
-            $files = ls $transformFile -recurse | % FullName
-            foreach ($file in $files) 
-            {
-                if($file.endswith($transformFileExtension, "CurrentCultureIgnoreCase"))
+            Get-ChildItem -Path $workingFolder -Filter "*$($defs.TransformPattern)" -Recurse | % {
+                $transformFile = $_
+                $token = $transformFile.Name.Substring(0, $transformFile.Name.Length - $defs.TransformPattern.Length)
+
+                $sourceFile = $defs.SourcePattern.Replace('*', $token)
+                if ($defs.IsSourceRelative)
                 {
-                    $fileWithoutExtension = $file.Substring(0, $file.length - $transformFileExtension.Length)
-                    $wildcardSource = $fileWithoutExtension + $sourceFile
-                    $wildcardOutput = $fileWithoutExtension + $outputFile
-
-                    _ApplyTransform -SourceFile $wildcardSource -TransformFile $file -OutputFile $wildcardOutput
+                    $sourceFile = Join-Path $transformFile.DirectoryName $sourceFile
                 }
+
+                $outputFile = $defs.OutputPattern.Replace('*', $token)
+                if ($defs.IsOutputRelative)
+                {
+                    $outputFile = Join-Path $transformFile.DirectoryName $outputFile
+                }
+
+                _ApplyTransform -TransformFile $transformFile.FullName -SourceFile $sourceFile -OutputFile $outputFile
             }
         }
-        else 
+        else
         {
-            _ApplyTransform -SourceFile $sourceFile -TransformFile $transformFile -OutputFile $outputFile
+            _ApplyTransform -SourceFile $defs.SourcePattern -TransformFile $defs.TransformPattern -OutputFile $defs.OutputPattern
         }
     }
 }

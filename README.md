@@ -38,8 +38,12 @@ You can set the variable `system.debug` to `true` to enable the debug logging on
 If you cannot fix your issue, open an issue on the github repo and i'll help you :)
 
 # Release notes
+**New in 3.1.0**
+- Update VstsTaskSdk to 0.11.0 ([#24](https://github.com/qetza/vsts-xdttransform-task/issues/24)).
+- Update Microsoft.Web.XmlTransform.dll to 3.1.0 (contributed by [livioc](https://github.com/livioc))
+
 **New in 3.0.0**
-- Add support for wildcard in transformation rules ([#8](https://github.com/qetza/vsts-xdttransform-task/issues/8)) (contributed by Luuk Sommers)
+- Add support for wildcard in transformation rules ([#8](https://github.com/qetza/vsts-xdttransform-task/issues/8)) (contributed by [Luuk Sommers](https://github.com/luuksommers))
 
 **New in 2.1.0**
 - Add support for comma separator in _Transformations_ parameters.

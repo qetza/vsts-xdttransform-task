@@ -70,7 +70,9 @@ try
     Add-Type -Path "${PSScriptRoot}\Microsoft.Web.XmlTransform.dll"
 
     # apply transforms
-    $transforms -split "(?:`n`r?)|," | % {
+    $transformsCount = 0
+
+    $transforms -split "(?:`n`r?)|," | ForEach-Object {
         $rule = $_.Trim()
 
         if (!$rule)
@@ -152,13 +154,17 @@ try
                 }
 
                 _ApplyTransform -TransformFile $transformFile.FullName -SourceFile $sourceFile -OutputFile $outputFile
+                ++$transformsCount
             }
         }
         else
         {
             _ApplyTransform -SourceFile $defs.SourcePattern -TransformFile $defs.TransformPattern -OutputFile $defs.OutputPattern
+            ++$transformsCount
         }
     }
+
+    Write-Host "transformed ${transformsCount} file(s)."
 }
 finally
 {

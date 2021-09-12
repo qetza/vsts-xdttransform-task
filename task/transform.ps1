@@ -17,39 +17,39 @@ Function _ApplyTransform
         return
     }
 
-    if (!(Test-Path $TransformFile))
+    if (Test-Path $TransformFile -PathType Leaf)
     {
-        Write-Error "File '${TransformFile}' not found."
+        # apply transformations
+        Write-Host "Applying transformations '${TransformFile}' on '${SourceFile}' to '${OutputFile}'..."
         
-        return
+        $source = New-Object Microsoft.Web.XmlTransform.XmlTransformableDocument
+        $source.PreserveWhitespace = $true
+        $source.Load($SourceFile)
+
+        $transform = [System.IO.File]::ReadAllText($TransformFile)
+        $transformation = New-Object Microsoft.Web.XmlTransform.XmlTransformation $transform, $false, $null
+        if (!$transformation.Apply($source))
+        {
+            Write-Error "Error while applying transformations '${TransformFile}'."
+
+            return
+        }
+
+        # save output
+        $outputParent = Split-Path $OutputFile -Parent
+        if (!(Test-Path $outputParent))
+        {
+            Write-Verbose "Creating folder '${outputParent}'."
+
+            New-Item -Path $outputParent -ItemType Directory -Force > $null
+        }
+
+        $source.Save($OutputFile)
     }
-
-    # apply transformations
-    Write-Host "Applying transformations '${TransformFile}' on '${SourceFile}' to '${OutputFile}'..."
-    
-    $source = New-Object Microsoft.Web.XmlTransform.XmlTransformableDocument
-    $source.PreserveWhitespace = $true
-    $source.Load($SourceFile)
-
-    $transform = [System.IO.File]::ReadAllText($TransformFile)
-    $transformation = New-Object Microsoft.Web.XmlTransform.XmlTransformation $transform, $false, $null
-    if (!$transformation.Apply($source))
+    else 
     {
-        Write-Error "Error while applying transformations '${TransformFile}'."
-
-        return
+        Write-Host "File '${TransformFile}' not found. Skipping Transform."
     }
-
-    # save output
-    $outputParent = Split-Path $OutputFile -Parent
-    if (!(Test-Path $outputParent))
-    {
-        Write-Verbose "Creating folder '${outputParent}'."
-
-        New-Item -Path $outputParent -ItemType Directory -Force > $null
-    }
-
-    $source.Save($OutputFile)
 }
 
 Trace-VstsEnteringInvocation $MyInvocation

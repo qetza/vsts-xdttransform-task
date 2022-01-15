@@ -23,7 +23,7 @@
   "devDependencies": {
     "minimist": "~1.2.5",
     "semver": "~5.6.0",
-    "shelljs": "^0.8.4",
+    "shelljs": "^0.8.5",
     "tfx-cli": "^0.7.11"
   }
 }

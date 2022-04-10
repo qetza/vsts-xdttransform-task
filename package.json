@@ -21,7 +21,7 @@
     "url": "git+https://github.com/qetza/vsts-xdttransform-task.git"
   },
   "devDependencies": {
-    "minimist": "~1.2.5",
+    "minimist": "~1.2.6",
     "semver": "~5.6.0",
     "shelljs": "^0.8.4",
     "tfx-cli": "^0.7.11"
